@@ -1,0 +1,114 @@
+\documentclass{article}
+\usepackage{graphicx} 
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}
+\usepackage{array} 
+\usepackage{booktabs}
+\usepackage[spanish]{babel}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+\usepackage{amsmath} % Para matemáticas
+
+\title{Resumen de instrucciones MIPS 32}
+\author{Jesus Rachadell}
+
+\newcolumntype{P}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+
+\begin{document}
+
+\maketitle
+
+\section{Introducción}
+Los computadores ejecutan operaciones mediante instrucciones, cuyo conjunto se denomina repertorio de instrucciones. MIPS es una arquitectura clásica basada en:
+\begin{itemize}
+    \item Simplicidad: Cada instrucción realiza una sola operación.
+    \item Rigidez: Sintaxis fija (3 operandos en operaciones básicas).
+    \item Eficiencia: Diseño orientado a alto rendimiento y bajo consumo.
+\end{itemize}
+A diferencia de lenguajes de alto nivel, MIPS opera directamente sobre el hardware, reflejando el concepto de programa almacenado. Compararemos brevemente MIPS con ARM y x86, destacando su relevancia en sistemas embebidos y PCs.
+
+\section{Instrucciones}
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{3cm}|p{4cm}|p{7cm}|}
+  \hline
+  \textbf{Nombre} & \textbf{Ejemplo} & \textbf{Concepto} \\
+  \hline
+  32 registros & \$s0-\$s7, \$t0-\$t9, \$zero, \$a0-\$a3, \$v0-\$v1, \$gp, \$fp, \$sp, \$ra, \$at & Registros y "variables"\\
+  \hline
+  2$^{30}$ palabras de memoria & Memory[0], Memory[4], \ldots, Memory[4294967292] & Las direcciones de palabras consecutivas se diferencian en 4. La memoria guarda las estructuras de datos, las tablas y los registros desbordados (guardados). \\
+  \hline
+\end{tabular}
+\caption{Descripción de registros y memoria en MIPS.}
+\label{tab:mips}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Resumen de instrucciones MIPS}
+\begin{tabular}{|P{2cm}|P{1.8cm}|P{2.2cm}|P{2.5cm}|P{4.0cm}|}
+  \hline
+  \textbf{Categoría} & \textbf{Instrucción} & \textbf{Ejemplo} & \textbf{Significado} & \textbf{Comentarios} \\
+  \hline
+  \multirow{3}{*}{Artimética} 
+    & add & \texttt{add \$s1, \$s2, \$s3} & \texttt{\$s1 = \$s2 + \$s3} & Tres operandos; datos en registros \\
+    \cline{2-5}
+    & subtract & \texttt{sub \$s1, \$s2, \$s3} & \texttt{\$s1 = \$s2 - \$s3} & Tres operandos; datos en registros \\
+    \cline{2-5}
+    & add immediate & \texttt{addi \$s1, \$s2, 100} & \texttt{\$s1 = \$s2 + 100} & Usado para sumar constantes \\
+  \hline
+  
+  \multirow{8}{*}{\shortstack{Transferencia \\ de dato}}
+    & load word & \texttt{lw \$s1, 100(\$s2)} & \texttt{\$s1 = Memory[\$s2 + 100]} & Palabra de memoria a registro \\
+    \cline{2-5}
+    & store word & \texttt{sw \$s1, 100(\$s2)} & \texttt{Memory[\$s2 + 100] = \$s1} & Palabra de registro a memoria \\
+    \cline{2-5}
+    & load half & \texttt{lh \$s1, 100(\$s2)} & \texttt{\$s1 = Memory[\$s2 + 100]} & Media palabra de memoria a registro \\
+    \cline{2-5}
+    & store half & \texttt{sh \$s1, 100(\$s2)} & \texttt{Memory[\$s2 + 100] = \$s1} & Media palabra de registro a memoria \\
+    \cline{2-5}
+    & load byte & \texttt{lb \$s1, 100(\$s2)} & \texttt{\$s1 = Memory[\$s2 + 100]} & Byte de memoria a registro \\
+    \cline{2-5}
+    & store byte & \texttt{sb \$s1, 100(\$s2)} & \texttt{Memory[\$s2 + 100] = \$s1} & Byte de registro a memoria \\
+    \cline{2-5}
+
+  \hline
+  
+  \multirow{7}{*}{Lógica}
+    & and & \texttt{and \$s1, \$s2, \$s3} & \texttt{\$s1 = \$s2 \& \$s3} & AND bit a bit \\
+    \cline{2-5}
+    & or & \texttt{or \$s1, \$s2, \$s3} & \texttt{\$s1 = \$s2 | \$s3} & OR bit a bit \\
+    \cline{2-5}
+    & nor & \texttt{nor \$s1, \$s2, \$s3} & \texttt{\$s1 = \textasciitilde(\$s2 | \$s3)} & NOR bit a bit \\
+    \cline{2-5}
+    & and immediate & \texttt{andi \$s1, \$s2, 100} & \texttt{\$s1 = \$s2 \& 100} & AND con constante \\
+    \cline{2-5}
+    & or immediate & \texttt{ori \$s1, \$s2, 100} & \texttt{\$s1 = \$s2 | 100} & OR con constante \\
+    \cline{2-5}
+    & shift left logical & \texttt{sll \$s1, \$s2, 10} & \texttt{\$s1 = \$s2 $\ll$ 10} & Desplazamiento izquierdo \\
+    \cline{2-5}
+    & shift right logical & \texttt{srl \$s1, \$s2, 10} & \texttt{\$s1 = \$s2 $\gg$ 10} & Desplazamiento derecho \\
+\hline
+  
+  \multirow{4}{*}{\shortstack{Salto \\ condicional}}
+    & branch on equal & \texttt{beq \$s1, \$s2, L} & \texttt{if (\$s1 == \$s2) go to L} & Comprueba igualdad y bifurca relativo al PC \\
+    \cline{2-5}
+    & branch on not equal & \texttt{bne \$s1, \$s2, L} & \texttt{if (\$s1 != \$s2) go to L} & Comprueba si no igual y bifurca relativo al PC \\
+    \cline{2-5}
+    & set on less than & \texttt{slt \$s1, \$s2, \$s3} & \texttt{if (\$s2 < \$s3) \$s1 = 1; else \$s1 = 0} & Compara si es menor que; usado con beq, bne \\
+    \cline{2-5}
+    & set on less than immediate & \texttt{slti \$s1, \$s2, 100} & \texttt{if (\$s2 < 100) \$s1 = 1; else \$s1 = 0} & Compara si es menor que una constante \\
+  \hline
+  
+  \multirow{3}{*}{\shortstack{Salto \\ incondicional}}
+    & jump & \texttt{j 2500} & \texttt{go to 10000} & Salto a la dirección destino \\
+    \cline{2-5}
+    & jump register & \texttt{jr \$ra} & \texttt{go to \$ra} & Para retorno de procedimiento \\
+    \cline{2-5}
+    & jump and link & \texttt{jal 2500} & \texttt{\$ra = PC + 4; go to 10000} & Para llamada a procedimiento \\
+  \hline
+\end{tabular}
+\end{table}
+
+\end{document}
